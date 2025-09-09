@@ -106,7 +106,7 @@ pred_y = testModel.predict(inter_test_input)
 modelEndTime = time.time()
 
 estimateModelTrainMemory = estimate_memory_training(baseModel, torch.tensor(input_data, dtype=torch.float32), optimizer_type=torch.optim.SGD)
-estimateModelInferenceMemeory = estimate_memory_inference(baseModel, torch.tensor(input_data, dtype=torch.float32))
+estimateModelInferenceMemory = estimate_memory_inference(baseModel, torch.tensor(input_data, dtype=torch.float32))
 
 acc_score= accuracy_score(pred_y, test_label)
 prec_score = precision_score(pred_y, test_label)
@@ -126,7 +126,7 @@ currentRes = {
     "training": True,
     "model": "XGB",
     "time" : modelEndTime - modelStartTime,
-    "memory": max(estimateModelTrainMemory, estimate_memory_inference)
+    "memory": max(estimateModelTrainMemory, estimateModelInferenceMemory)
     }
 
 results_csv.loc[len(results_csv)] = currentRes

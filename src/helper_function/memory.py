@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-def estimate_memory_training(model, sample_input, optimizer_type=torch.optim.Adam, batch_size=1, use_amp=False, device=0):
+def estimate_memory_training(model, sample_input, optimizer_type=torch.optim.Adam, use_amp=False, device=0):
     """Predict the maximum memory usage of the model. 
     Args:
         optimizer_type (Type): the class name of the optimizer to instantiate
@@ -19,7 +19,7 @@ def estimate_memory_training(model, sample_input, optimizer_type=torch.optim.Ada
     model.to(device)
     b = torch.cuda.memory_allocated(device)
     model_memory = b - a
-    model_input = sample_input.repeat(batch_size, 1)
+    model_input = sample_input
     output = model(model_input.to(device)).sum()
     c = torch.cuda.memory_allocated(device)
     if use_amp:
@@ -44,7 +44,7 @@ def estimate_memory_training(model, sample_input, optimizer_type=torch.optim.Ada
 
     return total_memory
 
-def estimate_memory_inference(model, sample_input, batch_size=1, use_amp=False, device=0):
+def estimate_memory_inference(model, sample_input, use_amp=False, device=0):
     """Predict the maximum memory usage of the model. 
     Args:
         optimizer_type (Type): the class name of the optimizer to instantiate
@@ -61,7 +61,7 @@ def estimate_memory_inference(model, sample_input, batch_size=1, use_amp=False, 
     model.to(device)
     b = torch.cuda.memory_allocated(device)
     model_memory = b - a
-    model_input = sample_input.unsqueeze(0).repeat(batch_size, 1)
+    model_input = sample_input
     output = model(model_input.to(device)).sum()
     total_memory = model_memory
 

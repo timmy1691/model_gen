@@ -7,12 +7,24 @@ import time
 import xgboost as xgb
 from sklearn.metrics import accuracy_score, recall_score, precision_score
 from src.helper_function.memory import estimate_memory_training, estimate_memory_inference
+import os
+from src.genRNN import pretrainedLSTM
 
 print("loading dataset")
-dataframe  = pd.read_csv()
 
-num_dp, num_input = dataframe.shape
+datapath = "datasets/desktop_cryptocurrency"
+datafilePath = "datasets/desktop_cryptocurrency/{}"
+dataDirectory = os.listdir(datapath)
 
-test_index = np.random.choice(range(num_dp), size=int(num_dp*0.2))
-train_index = [i for i in range(num_dp) if i not in test_index]
+datasets = []
+for dataset in dataDirectory:
+    df = pd.read_csv(datafilePath.format(dataset))
+    datasets.append(df)
 
+# print(datasets)
+
+print("training autoencoder experiment")
+encoder = pretrainedLSTM(10, 2, 10)
+encoder.init_model()
+encoder.getWeights()
+encoder.genWeights()
