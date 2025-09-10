@@ -166,11 +166,11 @@ from src.genMLP import genMLP
 
 
 print("Starting experiment with pretrained encoder")
+pretrainStart = time.time()
 PretrainedModel = genMLP(num_input, num_outputs)
 PretrainedModel.genModel()
 PretrainedModel.genWeights()
 
-pretrainStart = time.time()
 pretrained_inter_train = PretrainedModel(torch.tensor(raw_train_input, dtype=torch.float32)).detach().numpy()
 pretrained_inter_test = PretrainedModel(torch.tensor(raw_test_input, dtype=torch.float32)).detach().numpy()
 

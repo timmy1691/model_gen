@@ -3,7 +3,7 @@ from scipy.linalg import orth
 from scipy.linalg import svd
 import torch
 
-def genRandMatrix(numRows, numCols):
+def genRandHorizontalMatrix(numRows, numCols):
     # generate random orthonormal matrix to initialize as random weights
     randMat = np.random.normal(0, 1, size=(numRows, numCols))
     # print("generated shape: ", randMat.shape)
@@ -11,6 +11,15 @@ def genRandMatrix(numRows, numCols):
     # print(" U shape: ", U.shape)
     # print("V shape : ", V.shape)
     return V
+
+def genRandVerticalMatrix(numRows, numCols):
+    # generate random orthonormal matrix to initialize as random weights
+    randMat = np.random.normal(0, 1, size=(numRows, numCols))
+    # print("generated shape: ", randMat.shape)
+    U, s, V = torch.svd(torch.tensor(randMat.reshape(numRows, numCols)))
+    # print(" U shape: ", U.shape)
+    # print("V shape : ", V.shape)
+    return U
 
 def genPCAMat(samples):
     """
@@ -23,14 +32,22 @@ def genPCAMat(samples):
 def genScaledRandMat(numRows, numCols, norm=None):
     if norm is None:
         norm = numRows + numCols
-    orthMat = genRandMatrix(numRows, numCols)
+
     # norm_dim = min(numCols, numRows)
     if numRows <= numCols:
+        orthMat = genRandHorizontalMatrix(numRows, numCols)
         coefs = torch.rand(size=(numRows, 1))
     else:
+        orthMat = genRandVerticalMatrix(numRows, numCols)
         coefs = torch.rand(size=(1, numCols))
+
+    print("shape of the orthogonal matrix: ", orthMat.shape)
+
         
     coefs_sum = sum(coefs)
-    # print("coefficients: ", coefs.shape)
-    normed_coefs = coefs.T * (norm/coefs_sum)
-    return normed_coefs * orthMat
+    # print("coefficients: ", coefs_sum.shape)
+    normed_coefs = coefs.T * (norm/coefs_sum[0])
+    # print("normed_coefs : ", normed_coefs.shape)
+    temp = orthMat.T * normed_coefs
+    # print("temp res ", temp.shape)
+    return normed_coefs * orthMat.T

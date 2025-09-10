@@ -4,7 +4,7 @@ import torch.nn as nn
 import numpy as np
 import random
 import math
-from src.helper_function.matGen import genRandMatrix , genPCAMat, genScaledRandMat
+from src.helper_function.matGen import genPCAMat, genScaledRandMat
 
 
 class genMLP(nn.Module):

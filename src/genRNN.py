@@ -58,6 +58,7 @@ class pretrainedLSTM(nn.Module):
                 nRows, nCols = thing.shape
                 print("shape of the matrix: ", nRows, nCols)
                 tempMat = genScaledRandMat(nRows, nCols)
+                print("generated matrix shape: ", tempMat.shape)
                 new_state_dict[name] = tempMat.squeeze().T
 
         self.model.load_state_dict(new_state_dict)    
