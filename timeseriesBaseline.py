@@ -86,26 +86,30 @@ Criterion = nn.MSELoss()
 
 training(encoder, train_data_tensor, optimizer, Criterion)
 
-trained_ae_embeddings = encoder.getEncodings(train_data, False)
-trained_ae_test_embeddings = encoder.getEncodings(test_data, False)
+trained_ae_embeddings = encoder.getEncodings(train_data, False).detach().numpy()
+trained_ae_test_embeddings = encoder.getEncodings(test_data, False).cpu().detach().numpy()
 
 classifier  = xgb.XGBClassifier()
 classifier.fit(trained_ae_embeddings, train_label_tensor)
 pred_y = classifier.predict(trained_ae_test_embeddings)
 
+lstm_ae_acc = accuracy_score(pred_y, test_label_tensor)
+lstm_ae_prec = precision_score(pred_y, test_label_tensor)
+lstm_ae_rec = recall_score(pred_y, test_label_tensor)
+
+
 lstmEndTime = time.time()
 
 results_csv.loc[len(results_csv)] = {
     "method": "Trained LSTMAE + GXB",
-    "accuracy" : ,
-    "Recall" :,
-    "precision":,
+    "accuracy" : lstm_ae_acc,
+    "Recall" : lstm_ae_rec,
+    "precision": lstm_ae_prec,
     "training": True,
     "model": "LSRM + XGB",
     "time": lstmEndTime - lstmStartTime,
     "memory": 
     }
-}
 
 
 

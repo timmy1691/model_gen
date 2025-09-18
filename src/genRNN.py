@@ -33,10 +33,11 @@ class pretrainedLSTM(nn.Module):
 
     def forward(self, x, full_series = True):
         layerInputs = x
-        for i, module in enumerate(self):
-            enc_h0 = torch.zeros(1, 1, self.internal_dims[i+1]).to(x.device)
-            enc_c0 = torch.zeros(1, 1, self.internal_dims[i+1]).to(x.device)
-            layerInputs = module(layerInputs, (enc_h0, enc_c0))
+        for i, module in enumerate(self.model):
+            # print(module.shape)
+            enc_h0 = torch.zeros(1, layerInputs.size()[0], self.internal_dims[i+1]).to(x.device)
+            enc_c0 = torch.zeros(1, layerInputs.size()[0], self.internal_dims[i+1]).to(x.device)
+            layerInputs, states = module(layerInputs, (enc_h0, enc_c0))
 
         if not full_series:
             return layerInputs[:, -1, :]
@@ -56,9 +57,9 @@ class pretrainedLSTM(nn.Module):
         for name, thing in state_dict.items():
             if "weight" in name:
                 nRows, nCols = thing.shape
-                print("shape of the matrix: ", nRows, nCols)
+                # print("shape of the matrix: ", nRows, nCols)
                 tempMat = genScaledRandMat(nRows, nCols)
-                print("generated matrix shape: ", tempMat.shape)
+                # print("generated matrix shape: ", tempMat.shape)
                 new_state_dict[name] = tempMat.squeeze().T
 
         self.model.load_state_dict(new_state_dict)    

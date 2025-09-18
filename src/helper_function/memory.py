@@ -66,3 +66,6 @@ def estimate_memory_inference(model, sample_input, use_amp=False, device=0):
     total_memory = model_memory
 
     return total_memory
+
+def getMemoryTrain(model, optimizer, critereon, dataset):
+    

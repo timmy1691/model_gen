@@ -210,11 +210,28 @@ class LSTMAE(nn.Module):
         return y
 
     def getEncodings(self, x, full_time_series = True):
-        enc_h0 = torch.zeros(self.num_lstm_layers, x.size(0) , self.embedding_dim).to(x.device)
-        enc_c0 = torch.zeros(self.num_lstm_layers, x.size(0) , self.embedding_dim).to(x.device)
+        if isinstance(x, list):
+            enc_h0 = torch.zeros(self.num_lstm_layers, x[0].size(0) , self.embedding_dim).to(x.device)
+            enc_c0 = torch.zeros(self.num_lstm_layers, x[0].size(0) , self.embedding_dim).to(x.device)
+        else:
+            enc_h0 = torch.zeros(self.num_lstm_layers, x.size(0) , self.embedding_dim).to(x.device)
+            enc_c0 = torch.zeros(self.num_lstm_layers, x.size(0) , self.embedding_dim).to(x.device)
 
         enc_x , _ = self.encoderLSTM(x, (enc_c0, enc_h0))
         if full_time_series:
             return enc_x
         else:
             return enc_x[:,-1, :]
+
+class CNNAE(nn.Module):
+    def __init__(self, kernel_size, in_channels, out_channels, stride = 1, padding = 1, num_layers = 1, internal_channels = None):
+        self.kernel_size = kernel_size
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.stride = stride
+        self.padding = padding
+        self.num_layers = num_layers
+        self.internal_channels = internal_channels
+
+    def init_model(self):
+        if self.internal_channels is None:
