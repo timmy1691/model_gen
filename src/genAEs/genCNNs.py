@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as f
 import torch.nn as nn
 from src.helper_function.matGen import genScaledRandMat
+from src.helper_function.genKernel import gabor_bank, smooth_random_kernels
+from src.helper_function.memory import get_model_param_size
 
 class pretrainedCNN(nn.Module):
 
@@ -19,6 +21,8 @@ class pretrainedCNN(nn.Module):
         self.pad = pad
         self.internalChannels = internal_channels
         self.model = None
+        self.initModel()
+        self.genWeights()
 
     def initModel(self):
         if self.internalChannels is None:
@@ -41,49 +45,34 @@ class pretrainedCNN(nn.Module):
         self.model = nn.Sequential(*modelLayers)
 
     def getWeights(self):
-        for name, weights in self.model.named_parameters():
-            print(weights)
+        # for name, weights in self.model.named_parameters():
+        #     print(weights)
+        return self.model.named_parameters()
 
     def getStateDict(self):
         return self.model.state_dict()
+    
+    def genWeights(self):
+        channels = self.internalChannels
+        names, params = self.getWeights()
+        weights = {}
+        for n in names:
+            n_id, n_name = n.split(".")
+            i = int(n_id)
+            if i == 0:
+                currentWeights = gabor_bank(channels[i+1], channels[i], self.kernel_size)
+            else:
+                currentWeights = smooth_random_kernels(channels[i+1], channels[i], self.kernel_size)
 
+            if n_name == "weight":
+                weights[n] = currentWeights
 
-    def genFilters(self):
-        if isinstance(self.kernel_size, tuple):
-            dimensions = self.kernel_size
-        elif isinstance(self.kernel_size, int):
-            dimensions = (self.kernel_size, self.kernel_size)
-        else:
-            raise TypeError("wrong params for the kernel")
+        self.model.load_state_dict(weights)
 
-        statedict = self.getStateDict()
-        newStateDict = statedict.copy()
-        for name in statedict:
-            if "weight" in name:
-                # dim1 = number of out channels
-                # dim2 = number of in channels
-                # dim3 = size of kernel row
-                # dim4 = size of kernel column
-                dim1, dim2, dim3, dim4 = statedict[name].shape
-                newkernels = []
-                for j in range(dim1):
-                    # generate a kernel for each out channel
-                    num_rows = dim2
-                    num_cols = dim3*dim4
-                    # generate matrix for input_channel * kernelsize
-                    mat = genScaledRandMat(num_rows, num_cols)
-                    # print("initialized matrix shape ", mat.shape)
-                    newkernels.append(mat.reshape(1, dim2, dim3, dim4))
-
-                newStateDict[name] = torch.concat(newkernels, dim=0)
-            
-        self.model.load_state_dict(newStateDict)
 
     def forward(self, x):
         inputs = x
         for module in self.model:
-            inputs = module(x)
-        
+            inputs = module(inputs)
         return inputs
-
-
+    

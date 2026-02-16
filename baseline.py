@@ -89,7 +89,7 @@ test_label = encoded_y[test_index]
 #### start training for experiments
 print("start experiment for autoencoder training")
 modelStartTime = time.time()
-from src.autoencoder import AE
+from src.pretrainedAEs.autoencoder import AE
 baseModel = AE(num_input, num_outputs)
 baseModel.init_model()
 baseModel.trainModel((torch.tensor(input_data, dtype=torch.float32), torch.tensor(input_data, dtype=torch.float32)),epochs=300, lr=0.05)
@@ -162,7 +162,7 @@ currentRes = {
 
 results_csv.loc[len(results_csv)] = currentRes
 
-from src.genMLP import genMLP
+from src.genAEs.genMLP import genMLP
 
 
 print("Starting experiment with pretrained encoder")

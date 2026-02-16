@@ -2,7 +2,7 @@ import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
-from src.genConvolutions import pretrainedCNN
+from src.genAEs.genCNNs import pretrainedCNN
 
 transform = transforms.Compose([
     transforms.ToTensor(),  # convert image to tensor
@@ -34,8 +34,11 @@ print(images.shape, labels.shape)
 imageModel = pretrainedCNN(3, 1, 20, 2)
 
 imageModel.initModel()
-imageModel.genFilters()
+weights = imageModel.getWeights()
+print("weights:", weights)
 
-print(imageModel.model)
+for name, params in weights:
+    if "weight" in name:
+        print(name, params.shape)
 
-statedict = imageModel.getStateDict()
+

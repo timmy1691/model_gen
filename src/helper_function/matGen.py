@@ -41,10 +41,10 @@ def genScaledRandMat(numRows, numCols, norm=None):
         orthMat = genRandVerticalMatrix(numRows, numCols)
         coefs = torch.rand(size=(1, numCols))
 
-    # print("shape of the orthogonal matrix: ", orthMat.shape)
+    print("shape of the orthogonal matrix: ", orthMat.shape)
         
     coefs_sum = sum(coefs)
-    # print("coefficients: ", coefs_sum.shape)
+    print("coefficients: ", coefs_sum.shape)
     normed_coefs = coefs.T * (norm/coefs_sum[0])
     # print("normed_coefs : ", normed_coefs.shape)
 
@@ -54,4 +54,4 @@ def genScaledRandMat(numRows, numCols, norm=None):
     else:
     # temp = orthMat.T * normed_coefs
     # print("temp res ", temp.shape)
-        return normed_coefs * orthMat
+        return (normed_coefs * orthMat.T).T

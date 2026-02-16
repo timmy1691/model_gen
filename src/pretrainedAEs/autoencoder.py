@@ -235,3 +235,4 @@ class CNNAE(nn.Module):
 
     def init_model(self):
         if self.internal_channels is None:
+            

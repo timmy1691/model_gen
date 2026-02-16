@@ -7,8 +7,8 @@ import time
 import xgboost as xgb
 from sklearn.metrics import accuracy_score, recall_score, precision_score
 from src.helper_function.memory import estimate_memory_training, estimate_memory_inference
-from src.genRNN import pretrainedLSTM
-from src.autoencoder import LSTMAE
+from src.genAEs.genRNN import pretrainedLSTM
+from src.pretrainedAEs import LSTMAE
 from tqdm import tqdm
 from src.helper_function.data_transform import train_test_split
 import torch.optim as optim
@@ -47,14 +47,6 @@ def training(model, dataset, optimizer, criterion, epochs = 100):
 
 print("loading dataset")
 
-# datapath = "datasets/desktop_cryptocurrency"
-# datafilePath = "datasets/desktop_cryptocurrency/{}"
-# dataDirectory = os.listdir(datapath)
-
-# datasets = []
-# for dataset in dataDirectory:
-#     df = pd.read_csv(datafilePath.format(dataset))
-#     datasets.append(df)
 
 dataset = pd.read_csv("datasets/full_crypto_desktop.csv")
 print(dataset.head())
@@ -97,7 +89,6 @@ lstm_ae_acc = accuracy_score(pred_y, test_label_tensor)
 lstm_ae_prec = precision_score(pred_y, test_label_tensor)
 lstm_ae_rec = recall_score(pred_y, test_label_tensor)
 
-
 lstmEndTime = time.time()
 
 results_csv.loc[len(results_csv)] = {
@@ -106,11 +97,10 @@ results_csv.loc[len(results_csv)] = {
     "Recall" : lstm_ae_rec,
     "precision": lstm_ae_prec,
     "training": True,
-    "model": "LSRM + XGB",
+    "model": "LSTM + XGB",
     "time": lstmEndTime - lstmStartTime,
-    "memory": 
+    "memory": 0
     }
-
 
 
 results_csv.to_csv("lstm_results.csv", index=False)

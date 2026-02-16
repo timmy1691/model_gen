@@ -1,8 +1,8 @@
 import pandas as pd
 from scipy.io import arff
 import numpy as np
-from src.autoencoder import LSTMAE
-from src.genRNN import pretrainedLSTM
+from src.pretrainedAEs.autoencoder import LSTMAE
+from src.genAEs.genRNN import pretrainedLSTM
 from tqdm import tqdm
 import torch.optim as optim
 import torch

@@ -11,7 +11,7 @@ class pretrainedLSTM(nn.Module):
         self.num_layers = num_layers
         self.output_dim = output_dim
         self.internal_dims = internal_dims
-        self.model = None
+        self.init_model()
 
     def init_model(self):
         if self.internal_dims is None:
@@ -57,13 +57,16 @@ class pretrainedLSTM(nn.Module):
         for name, thing in state_dict.items():
             if "weight" in name:
                 nRows, nCols = thing.shape
-                # print("shape of the matrix: ", nRows, nCols)
                 tempMat = genScaledRandMat(nRows, nCols)
-                # print("generated matrix shape: ", tempMat.shape)
-                new_state_dict[name] = tempMat.squeeze().T
+                print("generated matrix shape: ", tempMat.shape)
+                new_state_dict[name] = tempMat.squeeze()
 
         self.model.load_state_dict(new_state_dict)    
 
     def getWeights(self):
         for name, module in self.model.named_parameters():
             print(module)
+        
+
+    def getEmbeddings(self, x, timeSeries):
+        return 

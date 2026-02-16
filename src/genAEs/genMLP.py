@@ -71,6 +71,6 @@ class genMLP(nn.Module):
         y = self.model(X)
         return y
         
-    def inference(self, data):
+    def getEmbeddings(self, data):
         output = self.model(data)
         return output
